@@ -1,33 +1,32 @@
-
 import mongoose from 'mongoose';
 
+// Define User schema
 const userSchema = new mongoose.Schema({
-    firstName: {
+    name: {
         type: String,
-        required: true
-    },
-    lastName: {
-        type: String
+        required: true,
     },
     email: {
         type: String,
+        required: true,
         unique: true,
-        required: true
     },
     password: {
         type: String,
-        required: true
+        required: true,
     },
-    cgpa: {
-        type: Number,
-        required: true
+    role: {
+        type: String,
+        enum: ['student', 'hr', 'admin'], // Roles can be student, hr, or admin
+        required: true,
     },
-    collegeId: {
-        unique: true,
-        type: Number,
-        required: true
-    }
+    createdAt: {
+        type: Date,
+        default: Date.now,
+    },
 });
 
-const User = mongoose.model("User", userSchema);
+// Create User model
+const User = mongoose.model('User', userSchema);
+
 export default User;

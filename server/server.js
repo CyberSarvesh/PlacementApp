@@ -1,82 +1,42 @@
-import express from 'express'; 
-import { config } from 'dotenv';
+// Import required modules
+import express from 'express';
 import mongoose from 'mongoose';
-import CompanyInfo from './routes/CompanyInfo.js';
-import userInfo from './routes/userInfo.js';
-import companyLocation from './routes/companyLocation.js';
-//import userFilterGrade from './routes/userFilterGrade.js';
-import authRoutes from './routes/auth.js';
+import bodyParser from 'body-parser';
+import dotenv from 'dotenv';
+
+// Import your models
+import User from './models/User.js';
+import Job from './models/Job.js';
+import Application from './models/Application.js';
 
 config();
 
-const PORT = process.env.PORT || 3000;
+//Importing routes in this:
+import userRoutes from "./routes/userRoutes.js";
+import jobRoutes from "./routes/jobRoutes.js";
+import applicationRoutes from "./routes/applicationsRoutes.js";
+
+
+// Create an Express application
 const app = express();
-const dbURL = process.env.dbURL;
 
-app.use(express.json());
+// Middleware
+app.use(bodyParser.json()); // To parse JSON request bodies
 
-// Connect to the MongoDB database
-mongoose
-    .connect(dbURL)
-    .then(() => {
-        console.log("Database connected successfully on URL %s", dbURL);
-    })
-    .catch((err) => {
-        console.log("MongoDB connection error:", err);
-    });
 
-// Existing routes
-app.get("/api/companyinfo", CompanyInfo);
-app.get("/api/userinfo", userInfo);
-app.get('/api/companies/location/:location', companyLocation);
-//app.get("/api/eligibility/:min_cgpa/:min_highschool_score", userFilterGrade);
+// MongoDB Connection
+const dbURL = process.env.dbURL || "mongodb://localhost:27017/placement-app"; // Replace with your MongoDB URI
+mongoose.connect(dbURL, { useNewUrlParser: true, useUnifiedTopology: true })
+    .then(() => console.log('MongoDB connected successfully'))
+    .catch(err => console.log('MongoDB connection error:', err));
 
-// Use authentication routes
-app.use('/api/auth', authRoutes);
 
-// Route to add a new company
-app.post("/api/company", async (req, res) => {
-    const { companyName, companyLogo, companyDescription, contact_info, location, eligibility } = req.body;
+//Routes for all users in ./routes/userRoutes.js
+app.get("/api/users",userRoutes);
+//Routes for all companies in ./routes/companyRoutes.js
+app.use('/api/jobs', jobRoutes); 
+//Routes for all applications in ./routes/applicationRoutes.js
+app.use('/api/applications', applicationRoutes);
 
-    try {
-        const newCompany = new Company({
-            companyName,
-            companyLogo,
-            companyDescription,
-            contact_info,
-            location,
-            eligibility
-        });
-
-        const savedCompany = await newCompany.save();
-        res.status(201).json(savedCompany);
-    } catch (err) {
-        res.status(500).json({ error: "Error adding new company." });
-    }
-});
-
-// Route to add a new user
-app.post("/api/user", async (req, res) => {
-    const { firstName, lastName, email, password, cgpa, collegeId } = req.body;
-
-    try {
-        const newUser = new User({
-            firstName,
-            lastName,
-            email,
-            password,
-            cgpa,
-            collegeId
-        });
-
-        const savedUser = await newUser.save();
-        res.status(201).json(savedUser);
-    } catch (err) {
-        res.status(500).json({ error: "Error adding new user." });
-    }
-});
-
-// Listen to the server
-app.listen(PORT, () => {
-    console.log(`Server is running on port ${PORT}`);
-});
+const PORT=process.env.PORT || 3000;
+app.listen(`The website is running on port:${PORT}`);
