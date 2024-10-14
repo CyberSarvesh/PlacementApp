@@ -4,6 +4,9 @@ import mongoose from 'mongoose';
 import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
 import userRoutes from './routes/userRoutes';
+import jobRoutes from './routes/jobRoutes';
+import applicationRoutes from './routes/applicationRoutes';
+
 dotenv.config();
 
 
@@ -23,11 +26,14 @@ const connectDB = async () => {
       process.exit(1); 
     }
   };
+
 connectDB();
 app.use(cors());
 app.use(bodyParser);
 
-app.get("/api/user",)
+app.get("/api/user",userRoutes);
+app.get("/api/jobs",jobsRoutes);
+app.get("/api/appliations",applicationRoutes);
 
 
 
