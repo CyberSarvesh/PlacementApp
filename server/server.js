@@ -1,44 +1,40 @@
 import express from 'express';
 import cors from 'cors';
 import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
-import userRoutes from './routes/userRoutes';
-import jobRoutes from './routes/jobRoutes';
-import applicationRoutes from './routes/applicationRoutes';
+import HrRoutes from './routes/HrRoutes.js';
+import studentRoutes from './routes/StudentRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
 dotenv.config();
 
+const app = express(); // Initialize app before using it
+const PORT = process.env.PORT || 3000;
+const dbURL = process.env.dbURL || 'mongodb://localhost:27017/placementapp'; // Default MongoDB port is 27017
 
-const app=express();
-const PORT=process.env.PORT || 3000;
-const dbURL=process.env.dbURL || 'mongodb://localhost:27012/placementapp';
+// Middleware
+app.use(cors());
+app.use(express.json()); // Replaces the need for body-parser
 
+// Connect to MongoDB
 const connectDB = async () => {
-    try {
-      const conn = await mongoose.connect(dbURL, {
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      });
-      console.log(`MongoDB Connected: ${conn.connection.host}`);
-    } catch (error) {
-      console.error(`Error: ${error.message}`);
-      process.exit(1); 
-    }
-  };
+  try {
+    const conn = await mongoose.connect(dbURL);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
+  }
+};
 
 connectDB();
-app.use(cors());
-app.use(bodyParser);
 
-app.get("/api/user",userRoutes);
-app.get("/api/jobs",jobsRoutes);
-app.get("/api/appliations",applicationRoutes);
+// Routes
+app.use('/api/students', studentRoutes);
+app.use('/api/hr', HrRoutes);
+app.use('/api/admin', adminRoutes);
 
-
-
-
-
-app.listen(PORT,(req,res)=>{
-    console.log(`The server/backend is running on Port:${PORT}`);
-})
+// Start server
+app.listen(PORT, () => {
+  console.log(`The server/backend is running on Port: ${PORT}`);
+});
