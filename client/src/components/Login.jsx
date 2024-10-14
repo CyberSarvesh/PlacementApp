@@ -1,7 +1,7 @@
 // src/components/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import './styles/Login.css';
+import '../styles/Login.css';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -28,7 +28,7 @@ const Login = () => {
       } else if (user.role === 'hr') {
         navigate('/hr-dashboard');
       } else {
-        navigate('/admin-dashboard'); // if you add an admin dashboard
+        navigate('/admin-dashboard');
       }
     } else {
       setMessage('Invalid email or password. Please try again.');
@@ -55,11 +55,11 @@ const Login = () => {
         />
         <button type="submit">Login</button>
       </form>
-      {message && <p>{message}</p>}
-      <p>
+      {message && <p className="message">{message}</p>}
+      <p className="register-link">
         Not registered? <a href="/register">Register here</a>
       </p>
-      <p>
+      <p className="reset-password">
         <a href="/reset-password">Forgot Password?</a>
       </p>
     </div>
