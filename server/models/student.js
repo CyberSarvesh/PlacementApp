@@ -1,41 +1,24 @@
-const mongoose = require('mongoose');
-const Schema = mongoose.Schema;
+import mongoose from 'mongoose';
 
-const studentSchema = new Schema({
+const studentSchema = new mongoose.Schema({
   name: {
     type: String,
-    required: true, // Student name is required
+    required: true,
   },
   email: {
     type: String,
     required: true,
-    unique: true, // Each student must have a unique email
+    unique: true,
   },
   password: {
     type: String,
-    required: true, // Password for login
-  },
-  cgpa: {
-    type: Number,
-    required: true, // Cumulative GPA for filtering applicants
-  },
-  tenthMarks: {
-    type: Number, // 10th grade marks
-    required: true,
-  },
-  twelfthMarks: {
-    type: Number, // 12th grade marks
     required: true,
   },
   appliedJobs: [{
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Job', // Array of jobs the student has applied for
+    ref: 'Job',
   }],
-  createdAt: {
-    type: Date,
-    default: Date.now, // Automatically store account creation date
-  },
 });
 
-const Student = mongoose.model('Student', studentSchema);
-module.exports = Student;
+const student = mongoose.model('Student', studentSchema);
+export default student;

@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from 'mongoose';
 const Schema = mongoose.Schema;
 
 const hrSchema = new Schema({
@@ -29,5 +29,5 @@ const hrSchema = new Schema({
   },
 });
 
-const HR = mongoose.model('HR', hrSchema);
-module.exports = HR;
+const hr = mongoose.model('HR', hrSchema);
+export default hr;
