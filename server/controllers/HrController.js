@@ -25,12 +25,32 @@ export const getHRById = async (req, res) => {
 
 // Create a new HR
 export const createHR = async (req, res) => {
+  console.log(req.body);
+
   try {
-    const Hr = new hr(req.body);
-    const savedHR = await hr.save();
-    res.status(201).json(savedHR);
+    const { name, email, password, company } = req.body;
+
+    if (!name || !email || !password || !company) {
+      return res.status(400).json({ message: "All required fields must be filled" });
+    }
+
+    const existingHR = await hr.findOne({ email });
+    if (existingHR) {
+      return res.status(400).json({ message: "HR with this email already exists" });
+    }
+
+    const newHR = new hr({
+      name,
+      email,
+      password,
+      company
+    });
+
+    await newHR.save();
+    res.status(201).json({ message: "HR created successfully" });
   } catch (error) {
-    res.status(400).json({ message: 'Error creating HR' });
+    console.error("Error creating HR:", error); // Log the error
+    res.status(500).json({ message: "Error creating HR", error: error.message });
   }
 };
 

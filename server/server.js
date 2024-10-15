@@ -14,7 +14,7 @@ const dbURL = process.env.dbURL || 'mongodb://localhost:27017/placementapp'; // 
 
 // Middleware
 app.use(cors());
-app.use(express.json()); // Replaces the need for body-parser
+app.use(express.json());
 
 // Connect to MongoDB
 const connectDB = async () => {

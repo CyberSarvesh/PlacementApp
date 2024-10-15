@@ -24,12 +24,25 @@ export const getStudentById = async (req, res) => {
 
 // Create a new student
 export const createStudent = async (req, res) => {
-  try {
-    const student = new Student(req.body);
-    const savedStudent = await student.save();
-    res.status(201).json(savedStudent);
-  } catch (error) {
-    res.status(400).json({ message: 'Error creating student' });
+  console.log(req.body);
+  try{
+    const {name,email,password}=req.body;
+    if(!name | !email | !password){
+      return res.status(400).json({messsage:"One of the fields not passed"});
+    }
+    const existingStudent=await Student.findOne({email});
+    if(existingStudent!=0){
+      return res.status(400).json({message:"There is a user with this email"});
+    }
+    const newStudent=new Student({name,email,password});
+    await newStudent.save();
+    res.status(201).json({message:"Student created successfully."});
+
+
+
+  }catch(error){
+    console.error("Error creating HR:", error); // Log the error
+    res.status(500).json({ message: "Error creating HR", error: error.message });
   }
 };
 

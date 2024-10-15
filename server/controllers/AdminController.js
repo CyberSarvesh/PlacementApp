@@ -26,12 +26,25 @@ export const getAdminById = async (req, res) => {
 
 // Create a new admin
 export const createAdmin = async (req, res) => {
-  try {
-    const admin = new Admin(req.body);
-    const savedAdmin = await admin.save();
-    res.status(201).json(savedAdmin);
-  } catch (error) {
-    res.status(400).json({ message: 'Error creating admin' });
+  console.log(req.body);
+  try{
+    const {name,email,password}=req.body;
+    if(!name | !email | !password){
+      res.status(400).json({message:"One of the fields doesnt exist"});
+    }
+    const existingAdmin=await Admin.findOne({email});
+    if(existingAdmin){
+      res.status(400).json({message:"There already exist a admin with this email"});
+    }
+    const newAdmin=new Admin({
+      name,email,password
+    });
+    await newAdmin.save();
+    res.status(200).json({message:"A new admin created successfully"});
+
+  }catch(error){
+    console.error("Error creating Admin:", error); // Log the error
+    res.status(500).json({ message: "Error creating HR", error: error.message });
   }
 };
 
