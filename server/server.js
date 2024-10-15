@@ -1,42 +1,40 @@
-// Import required modules
 import express from 'express';
+import cors from 'cors';
 import mongoose from 'mongoose';
-import bodyParser from 'body-parser';
 import dotenv from 'dotenv';
+import HrRoutes from './routes/HrRoutes.js';
+import studentRoutes from './routes/StudentRoutes.js';
+import adminRoutes from './routes/adminRoutes.js';
 
-// Import your models
-import User from './models/User.js';
-import Job from './models/Job.js';
-import Application from './models/Application.js';
+dotenv.config();
 
-config();
-
-//Importing routes in this:
-import userRoutes from "./routes/userRoutes.js";
-import jobRoutes from "./routes/jobRoutes.js";
-import applicationRoutes from "./routes/applicationsRoutes.js";
-
-
-// Create an Express application
-const app = express();
+const app = express(); // Initialize app before using it
+const PORT = process.env.PORT || 3000;
+const dbURL = process.env.dbURL || 'mongodb://localhost:27017/placementapp'; // Default MongoDB port is 27017
 
 // Middleware
-app.use(bodyParser.json()); // To parse JSON request bodies
+app.use(cors());
+app.use(express.json());
 
+// Connect to MongoDB
+const connectDB = async () => {
+  try {
+    const conn = await mongoose.connect(dbURL);
+    console.log(`MongoDB Connected: ${conn.connection.host}`);
+  } catch (error) {
+    console.error(`Error: ${error.message}`);
+    process.exit(1);
+  }
+};
 
-// MongoDB Connection
-const dbURL = process.env.dbURL || "mongodb://localhost:27017/placement-app"; // Replace with your MongoDB URI
-mongoose.connect(dbURL, { useNewUrlParser: true, useUnifiedTopology: true })
-    .then(() => console.log('MongoDB connected successfully'))
-    .catch(err => console.log('MongoDB connection error:', err));
+connectDB();
 
+// Routes
+app.use('/api/students', studentRoutes);
+app.use('/api/hr', HrRoutes);
+app.use('/api/admin', adminRoutes);
 
-//Routes for all users in ./routes/userRoutes.js
-app.get("/api/users",userRoutes);
-//Routes for all companies in ./routes/companyRoutes.js
-app.use('/api/jobs', jobRoutes); 
-//Routes for all applications in ./routes/applicationRoutes.js
-app.use('/api/applications', applicationRoutes);
-
-const PORT=process.env.PORT || 3000;
-app.listen(`The website is running on port:${PORT}`);
+// Start server
+app.listen(PORT, () => {
+  console.log(`The server/backend is running on Port: ${PORT}`);
+});
