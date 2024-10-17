@@ -13,13 +13,14 @@ export const getAdmins = async (req, res) => {
   }
 };
 
-// Get admin by ID
-export const getAdminById = async (req, res) => {
+// Get admin by Email
+export const getAdminByEmail = async (req, res) => {
   try {
-    const admin = await Admin.findById(req.params.id);
+    const admin = await Admin.findOne({ email: req.params.email });
     if (!admin) return res.status(404).json({ message: 'Admin not found' });
     res.json(admin);
   } catch (error) {
+    console.error(error); // Log the error
     res.status(500).json({ message: 'Error fetching admin' });
   }
 };

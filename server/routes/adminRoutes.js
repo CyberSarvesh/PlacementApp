@@ -1,13 +1,21 @@
 import express from 'express';
-import { getAdmins, getAdminById, createAdmin, updateAdmin, deleteAdmin, manageUsers, manageJobs } from '../controllers/AdminController.js';
+import {
+  getAdmins,
+  getAdminByEmail,
+  createAdmin,
+  updateAdmin,
+  deleteAdmin,
+  manageUsers,
+  manageJobs,
+} from '../controllers/AdminController.js';
 
 const router = express.Router();
 
 // Get all admins
 router.get('/', getAdmins);
 
-// Get a single admin by ID
-router.get('/:id', getAdminById);
+// Get a single admin by email
+router.get('/email/:email', getAdminByEmail);  // Updated route
 
 // Create a new admin
 router.post('/', createAdmin);
