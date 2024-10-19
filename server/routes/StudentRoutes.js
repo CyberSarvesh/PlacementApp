@@ -16,7 +16,7 @@ router.post('/', createStudent);
 router.put('/:id', updateStudent);
 
 // Delete a student by ID
-router.delete('/:id', deleteStudent);
+router.delete('/:email', deleteStudent);
 
 // Apply for a job
 router.post('/:id/apply', applyForJob);

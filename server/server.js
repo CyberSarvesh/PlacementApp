@@ -30,7 +30,7 @@ const connectDB = async () => {
 connectDB();
 
 // Routes
-app.use('/api/students', studentRoutes);
+app.use('/api/student', studentRoutes);
 app.use('/api/hr', HrRoutes);
 app.use('/api/admin', adminRoutes);
 

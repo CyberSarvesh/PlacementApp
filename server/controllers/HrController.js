@@ -68,13 +68,16 @@ export const updateHR = async (req, res) => {
 // Delete HR by ID
 export const deleteHR = async (req, res) => {
   try {
-    const Hr = await hr.findByIdAndDelete(req.params.id);
-    if (!Hr) return res.status(404).json({ message: 'HR not found' });
+    const HR = await hr.findOneAndDelete({ email: req.params.email });
+    if (!HR) {
+      return res.status(404).json({ message: 'HR not found' });
+    }
     res.json({ message: 'HR deleted successfully' });
   } catch (error) {
-    res.status(500).json({ message: 'Error deleting HR' });
+    res.status(500).json({ message: 'Error deleting HR', error: error.message });
   }
 };
+
 
 // Post a job
 export const postJob = async (req, res) => {

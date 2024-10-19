@@ -25,26 +25,31 @@ export const getStudentById = async (req, res) => {
 // Create a new student
 export const createStudent = async (req, res) => {
   console.log(req.body);
-  try{
-    const {name,email,password}=req.body;
-    if(!name | !email | !password){
-      return res.status(400).json({messsage:"One of the fields not passed"});
+  try {
+    const { name, email, password } = req.body;
+
+    // Check for required fields
+    if (!name || !email || !password) {
+      return res.status(400).json({ message: "One of the fields not passed" });
     }
-    const existingStudent=await Student.findOne({email});
-    if(existingStudent!=0){
-      return res.status(400).json({message:"There is a user with this email"});
+
+    // Check if the student already exists
+    const existingStudent = await Student.findOne({ email });
+    if (existingStudent) { // Check if existingStudent is truthy
+      return res.status(400).json({ message: "There is a user with this email" });
     }
-    const newStudent=new Student({name,email,password});
+
+    // Create a new student if no existing student is found
+    const newStudent = new Student({ name, email, password });
     await newStudent.save();
-    res.status(201).json({message:"Student created successfully."});
-
-
-
-  }catch(error){
-    console.error("Error creating HR:", error); // Log the error
-    res.status(500).json({ message: "Error creating HR", error: error.message });
+    
+    res.status(201).json({ message: "Student created successfully." });
+  } catch (error) {
+    console.error("Error creating student:", error); // Log the error
+    res.status(500).json({ message: "Error creating student", error: error.message });
   }
 };
+
 
 // Update a student by ID
 export const updateStudent = async (req, res) => {
@@ -60,13 +65,15 @@ export const updateStudent = async (req, res) => {
 // Delete a student by ID
 export const deleteStudent = async (req, res) => {
   try {
-    const student = await Student.findByIdAndDelete(req.params.id);
+    const { email } = req.params; // Get email from params
+    const student = await Student.findOneAndDelete({ email: email });
     if (!student) return res.status(404).json({ message: 'Student not found' });
     res.json({ message: 'Student deleted successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Error deleting student' });
   }
 };
+
 
 // Apply for a job
 export const applyForJob = async (req, res) => {

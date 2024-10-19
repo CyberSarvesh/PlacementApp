@@ -1,6 +1,6 @@
-// src/components/Login.js
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import '../styles/Login.css';
 
 const Login = () => {
@@ -9,29 +9,43 @@ const Login = () => {
   const [message, setMessage] = useState('');
   const navigate = useNavigate();
 
-  const users = [
-    { email: 'student@example.com', password: 'student123', role: 'student' },
-    { email: 'hr@example.com', password: 'hr123', role: 'hr' },
-    { email: 'admin@example.com', password: 'admin123', role: 'admin' },
-  ];
-
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const user = users.find(
-      (user) => user.email === email && user.password === password
-    );
 
-    if (user) {
-      setMessage(`Login successful! Welcome, ${user.role}.`);
-      if (user.role === 'student') {
-        navigate('/student-dashboard');
-      } else if (user.role === 'hr') {
-        navigate('/hr-dashboard');
+    // Determine user type based on the email domain or specific criteria
+    const userType = email.includes('@admin.com') ? 'admin' :
+                     email.includes('@hr.com') ? 'hr' :
+                     email.includes('@student.com') ? 'student' : null;
+
+    if (!userType) {
+      setMessage('Invalid email. Please try again.');
+      return;
+    }
+
+    try {
+      const response = await axios.get(`http://localhost:3000/api/${userType}/email/${email}`);
+      const user = response.data; // This will include the password now
+      console.log(user);
+      // Compare the provided password with the fetched password
+      if (user.password !== password) {
+        console.error('Invalid credentials');
+        setMessage('Invalid credentials. Please try again.');
       } else {
-        navigate('/admin-dashboard');
+        console.log('Login successful:', user);
+        setMessage('Login successful!');
+
+        // Redirect to the appropriate dashboard based on user type
+        if (userType === 'admin') {
+          navigate('/admin-dashboard');
+        } else if (userType === 'student') {
+          navigate('/student-dashboard');
+        } else if (userType === 'hr') {
+          navigate('/hr-dashboard');
+        }
       }
-    } else {
-      setMessage('Invalid email or password. Please try again.');
+    } catch (error) {
+      console.error('Error during login:', error.response ? error.response.data : error.message);
+      setMessage('An error occurred during login. Please try again.');
     }
   };
 
